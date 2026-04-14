@@ -1,0 +1,47 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// SQLite: store as strings (LEAD | ENGINEER, ticket statuses, priorities)
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String
+  passwordHash String
+  role         String   @default("ENGINEER")
+  createdAt    DateTime @default(now())
+  ticketsOwned Ticket[] @relation("OwnedTickets")
+  ticketsAssigned Ticket[] @relation("AssignedTickets")
+  comments     Comment[]
+}
+
+model Ticket {
+  id          String   @id @default(cuid())
+  number      Int      @unique
+  title       String
+  description String   @default("")
+  status      String   @default("BACKLOG")
+  priority    String   @default("MEDIUM")
+  creatorId   String
+  assigneeId  String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  creator     User     @relation("OwnedTickets", fields: [creatorId], references: [id])
+  assignee    User?    @relation("AssignedTickets", fields: [assigneeId], references: [id])
+  comments    Comment[]
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  body      String
+  ticketId  String
+  authorId  String
+  createdAt DateTime @default(now())
+  ticket    Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  author    User     @relation(fields: [authorId], references: [id])
+}
