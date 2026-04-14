@@ -44,3 +44,6 @@ next-env.d.ts
 # sqlite local db
 /prisma/dev.db
 /prisma/dev.db-journal
+
+# embedded-postgres (npm run demo)
+/.demo-pg/

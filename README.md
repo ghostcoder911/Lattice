@@ -1,6 +1,6 @@
 # Lattice
 
-Team work tracker: tickets, assignees, Kanban-style board, and progress comments. Built with [Next.js](https://nextjs.org/) and [Prisma](https://www.prisma.io/) with **PostgreSQL**.
+Team work tracker: tickets, assignees, Kanban-style board, progress comments, and a **time clock** (clock in/out with Excel export). Built with [Next.js](https://nextjs.org/) and [Prisma](https://www.prisma.io/) with **PostgreSQL**.
 
 ## Local setup
 

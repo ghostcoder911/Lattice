@@ -11,6 +11,9 @@ export function AppHeader() {
           <Link href="/board" className="hover:text-zinc-200">
             Board
           </Link>
+          <Link href="/time-clock" className="hover:text-zinc-200">
+            Time clock
+          </Link>
         </nav>
       </div>
     </header>

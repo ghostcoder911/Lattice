@@ -18,6 +18,18 @@ model User {
   ticketsOwned Ticket[] @relation("OwnedTickets")
   ticketsAssigned Ticket[] @relation("AssignedTickets")
   comments     Comment[]
+  timeEntries  TimeEntry[]
+}
+
+model TimeEntry {
+  id       String    @id @default(cuid())
+  userId   String
+  clockIn  DateTime
+  clockOut DateTime?
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([clockIn])
 }
 
 model Ticket {
