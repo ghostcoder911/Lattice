@@ -3,11 +3,11 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-// SQLite: store as strings (LEAD | ENGINEER, ticket statuses, priorities)
+// Roles and enums stored as strings (LEAD | ENGINEER, ticket statuses, priorities)
 model User {
   id           String   @id @default(cuid())
   email        String   @unique
