@@ -25,7 +25,7 @@ Open [http://localhost:3000](http://localhost:3000).
 | Command | Description |
 |--------|-------------|
 | `npm run dev` | Development server |
-| `npm run build` | `prisma migrate deploy` + production Next.js build |
+| `npm run build` | `prisma migrate deploy` + `prisma db seed` + production Next.js build |
 | `npm run start` | Run production server |
 | `npm run db:seed` | Seed team members and sample tickets |
 
@@ -55,7 +55,7 @@ Vercel cannot use SQLite for this app. Use a hosted Postgres:
 2. **Add New…** → **Project** → **Import** your `Lattice` (or repo name) repository.
 3. **Framework Preset:** Next.js (auto-detected).
 4. **Root Directory:** leave default if the Next app is at the repo root.
-5. **Build Command:** leave default (`npm run build` or `next build`). This repo’s `build` script runs `prisma migrate deploy` then `next build`.
+5. **Build Command:** leave default (`npm run build` or `next build`). This repo’s `build` script runs `prisma migrate deploy`, then **`prisma db seed`** (team + optional sample tickets), then `next build`.
 6. **Install Command:** `npm install` (default).
 
 ### 4. Add environment variables
@@ -84,21 +84,18 @@ Apply both variables to **Production** (and **Preview** if you use preview deplo
 
 ### 5. Deploy
 
-Click **Deploy**. The first build will run migrations against your database, then build Next.js.
+Click **Deploy**. Each production build runs **migrations**, then **seeds** the team list (and sample tickets only if the board is empty), then builds Next.js. You do **not** need to run `npm run db:seed` manually on Vercel.
 
-### 6. Seed data (once)
+### 6. Optional: seed again from your laptop
 
-After the first successful deploy, load your team and sample tickets by running the seed **from your laptop** against the **production** database:
+If you ever need to re-run the seed (e.g. after resetting the DB), use the same `DATABASE_URL` and `DIRECT_URL` as in Vercel:
 
 ```bash
 cd /path/to/Lattice
-# Set the same vars as in Vercel (both if you use Supabase pooler)
 export DATABASE_URL="postgresql://..."
-export DIRECT_URL="postgresql://..."   # same as DATABASE_URL for Neon; pooler session URL for Supabase
+export DIRECT_URL="postgresql://..."
 npm run db:seed
 ```
-
-Or use Neon’s SQL editor / Prisma Studio with `DATABASE_URL` set — the app expects seeded users for assignees (see `prisma/seed.ts`).
 
 ### 7. Open the site
 
@@ -111,4 +108,4 @@ Vercel shows a URL like `https://your-project.vercel.app`. Custom domains: **Set
 - **`P1001: Can't reach database server` to `db.*.supabase.co:5432` on Vercel:** Use **Supabase pooler** URLs and set **`DIRECT_URL`** (session, port 5432) plus **`DATABASE_URL`** (transaction, port 6543 + `pgbouncer=true`). See step 4 above. Also confirm the Supabase project is **not paused** (dashboard banner).
 - **Build fails on `prisma migrate deploy`:** Ensure **`DATABASE_URL` and `DIRECT_URL`** exist in Vercel for the environment you deploy to.
 - **Runtime errors connecting to DB:** Ensure SSL if required (`?sslmode=require`).
-- **Empty assignee list:** Run `npm run db:seed` with production `DATABASE_URL` once.
+- **Empty assignee list:** Redeploy so the build runs **`prisma db seed`**, or run `npm run db:seed` locally with production `DATABASE_URL` and `DIRECT_URL`. Confirm env vars match a working database.
