@@ -37,10 +37,20 @@ description: >-
 
 - `vercel link` (once) / `vercel --prod` **or** rely on Git → Vercel import.
 
-### 4. Environment variable
+### 4. Environment variable + redeploy (automated)
 
-- Vercel **Settings → Environment Variables:** **`DATABASE_URL`** = full Postgres URI (see table above). Remove obsolete **`DIRECT_URL`** if present.
-- Redeploy after changes.
+If the user provides **`DATABASE_URL`** (export or gitignored file), run from repo root:
+
+```bash
+export DATABASE_URL='postgresql://…'
+npm run vercel:deploy
+```
+
+Or: `npm run vercel:deploy -- .env.production.local` where that file contains `DATABASE_URL=…`.
+
+This script calls **`vercel env add DATABASE_URL production --value … --sensitive`** then **`vercel --prod`**. Requires **`vercel login`** and **`vercel link`** to the correct project first.
+
+Manual alternative: Vercel **Settings → Environment Variables** → **`DATABASE_URL`** → **Redeploy**.
 
 ### 5. Verify
 

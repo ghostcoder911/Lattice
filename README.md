@@ -30,6 +30,7 @@ Open [http://localhost:3000](http://localhost:3000).
 | `npm run db:seed` | Seed team members and sample tickets |
 | `npm run demo` | Local demo: embedded Postgres + migrate + seed + `next dev` |
 | `npm run vercel:host` | Print Vercel CLI checklist; full agent steps in `.cursor/skills/lattice-vercel-host/` |
+| `npm run vercel:deploy` | Set `DATABASE_URL` on Vercel (Production) and run `vercel --prod` — needs `vercel login`, `vercel link`, and `DATABASE_URL` in env or a file (see script header) |
 
 ## Requirements
 
