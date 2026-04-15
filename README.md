@@ -44,4 +44,5 @@ Open [http://localhost:3000](http://localhost:3000).
 - **`P1001: Can't reach database server` to `db.*.supabase.co:5432` on Vercel:** Use **Supabase pooler** URLs and set **`DIRECT_URL`** (session, port 5432) plus **`DATABASE_URL`** (transaction, port 6543 + `pgbouncer=true`). See step 4 above. Also confirm the Supabase project is **not paused** (dashboard banner).
 - **Build fails on `prisma migrate deploy`:** Ensure **`DATABASE_URL` and `DIRECT_URL`** exist in Vercel for the environment you deploy to.
 - **Runtime errors connecting to DB:** Ensure SSL if required (`?sslmode=require`).
+- **`P1012` / `Environment variable not found: DIRECT_URL` on Vercel:** Add **`DIRECT_URL`** in the Vercel project (**Settings → Environment Variables**) for Production. For **Neon** (single URL), set **`DIRECT_URL` to the same value as `DATABASE_URL`**. For **Supabase**, use the **session** pooler URL (port 5432) from Connect → ORM → Prisma, not only `DATABASE_URL`. Redeploy.
 - **Empty assignee list:** Redeploy so the build runs **`prisma db seed`**, or run `npm run db:seed` locally with production `DATABASE_URL` and `DIRECT_URL`. Confirm env vars match a working database.

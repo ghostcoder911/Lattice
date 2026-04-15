@@ -64,6 +64,7 @@ description: >-
 
 ### 6. Troubleshooting (quick)
 
+- **P1012 `Environment variable not found: DIRECT_URL`:** The Vercel project is missing **`DIRECT_URL`**. Add it next to `DATABASE_URL` (Neon: **same value** for both; Supabase: session pooler on **5432**). Redeploy.
 - **P1001 to `db.*.supabase.co`:** Switch to **pooler** URLs + `DIRECT_URL`; see README.
 - **Empty assignees:** Seed failed or old deploy — fix env, redeploy; build runs seed automatically (`package.json` `build` script).
 - **`tsx` / seed errors:** `tsx` is a **dependency** in this repo for production seed.

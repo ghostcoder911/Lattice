@@ -1,0 +1,4 @@
+# Do not upload local secrets with `vercel` CLI (upload uses this like .gitignore)
+.env
+.env.*
+!.env.example
