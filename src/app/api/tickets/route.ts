@@ -8,24 +8,37 @@ const statuses = [...TICKET_STATUSES];
 const priorities = [...PRIORITIES];
 
 export async function GET(req: Request) {
-  const { searchParams } = new URL(req.url);
-  const status = searchParams.get("status") as TicketStatus | null;
-  const assigneeId = searchParams.get("assigneeId");
+  try {
+    const { searchParams } = new URL(req.url);
+    const status = searchParams.get("status") as TicketStatus | null;
+    const assigneeId = searchParams.get("assigneeId");
 
-  const tickets = await prisma.ticket.findMany({
-    where: {
-      ...(status && statuses.includes(status) ? { status } : {}),
-      ...(assigneeId ? { assigneeId } : {}),
-    },
-    orderBy: [{ updatedAt: "desc" }],
-    include: {
-      creator: { select: { id: true, name: true, email: true } },
-      assignee: { select: { id: true, name: true, email: true } },
-      _count: { select: { comments: true } },
-    },
-  });
+    const tickets = await prisma.ticket.findMany({
+      where: {
+        ...(status && statuses.includes(status) ? { status } : {}),
+        ...(assigneeId ? { assigneeId } : {}),
+      },
+      orderBy: [{ updatedAt: "desc" }],
+      include: {
+        creator: { select: { id: true, name: true, email: true } },
+        assignee: { select: { id: true, name: true, email: true } },
+        _count: { select: { comments: true } },
+      },
+    });
 
-  return NextResponse.json({ tickets });
+    return NextResponse.json({ tickets });
+  } catch (err) {
+    console.error("[api/tickets GET]", err);
+    return NextResponse.json(
+      {
+        tickets: [],
+        error: "DATABASE_UNAVAILABLE",
+        message:
+          "Could not load tickets. Check DATABASE_URL in Vercel and redeploy.",
+      },
+      { status: 503 },
+    );
+  }
 }
 
 export async function POST(req: Request) {

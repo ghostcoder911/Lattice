@@ -31,11 +31,7 @@ async function main() {
   }
 
   const databaseUrl = `postgresql://postgres:demo@127.0.0.1:${port}/lattice`;
-  const env = {
-    ...process.env,
-    DATABASE_URL: databaseUrl,
-    DIRECT_URL: databaseUrl,
-  };
+  const env = { ...process.env, DATABASE_URL: databaseUrl };
 
   console.log("Applying migrations…");
   const migrate = spawnSync("npx", ["prisma", "migrate", "deploy"], {

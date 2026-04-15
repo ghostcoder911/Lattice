@@ -23,13 +23,30 @@ export function BoardView() {
   const [members, setMembers] = useState<(UserBrief & { role: string })[]>([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
+  const [fetchError, setFetchError] = useState<string | null>(null);
+  const [teamEmptyHint, setTeamEmptyHint] = useState(false);
 
   const load = useCallback(async () => {
+    setFetchError(null);
+    setTeamEmptyHint(false);
     const [tRes, mRes] = await Promise.all([fetch("/api/tickets"), fetch("/api/team")]);
-    const tJson = await tRes.json();
-    const mJson = await mRes.json();
-    if (tRes.ok) setTickets(tJson.tickets);
-    if (mRes.ok) setMembers(mJson.members);
+    const tJson = await tRes.json().catch(() => ({}));
+    const mJson = await mRes.json().catch(() => ({}));
+
+    const errs: string[] = [];
+    if (tRes.ok) setTickets(tJson.tickets ?? []);
+    else errs.push(typeof tJson.message === "string" ? tJson.message : `Tickets (${tRes.status})`);
+
+    if (mRes.ok) {
+      const list = mJson.members ?? [];
+      setMembers(list);
+      if (list.length === 0) setTeamEmptyHint(true);
+    } else {
+      setMembers([]);
+      errs.push(typeof mJson.message === "string" ? mJson.message : `Team (${mRes.status})`);
+    }
+
+    setFetchError(errs.length ? errs.join(" ") : null);
     setLoading(false);
   }, []);
 
@@ -58,6 +75,19 @@ export function BoardView() {
           New ticket
         </button>
       </div>
+
+      {fetchError ? (
+        <div className="mb-4 rounded-lg border border-red-900/60 bg-red-950/40 px-3 py-2 text-sm text-red-200">
+          {fetchError}
+        </div>
+      ) : null}
+      {teamEmptyHint && !fetchError ? (
+        <div className="mb-4 rounded-lg border border-amber-900/50 bg-amber-950/30 px-3 py-2 text-sm text-amber-100">
+          No team members loaded. In Vercel, set <strong className="font-mono">DATABASE_URL</strong> to your
+          Postgres connection string (Supabase: use the <strong>Session pooler</strong> URI from Connect → ORM →
+          Prisma), then <strong>Redeploy</strong>. The production build runs <code className="text-xs">prisma db seed</code> to create names.
+        </div>
+      ) : null}
 
       {loading ? (
         <p className="text-zinc-500">Loading…</p>

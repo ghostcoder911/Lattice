@@ -34,11 +34,24 @@ export function TimeClockView() {
     type: "ok" | "err";
     text: string;
   } | null>(null);
+  const [teamError, setTeamError] = useState<string | null>(null);
+  const [teamEmptyHint, setTeamEmptyHint] = useState(false);
 
   const loadTeam = useCallback(async () => {
     const res = await fetch("/api/team");
-    const data = await res.json();
-    setMembers(data.members ?? []);
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      setTeamError(
+        typeof data.message === "string" ? data.message : `Error ${res.status}`,
+      );
+      setMembers([]);
+      setTeamEmptyHint(false);
+      return;
+    }
+    setTeamError(null);
+    const list = data.members ?? [];
+    setMembers(list);
+    setTeamEmptyHint(list.length === 0);
   }, []);
 
   const loadEntries = useCallback(async () => {
@@ -151,6 +164,19 @@ export function TimeClockView() {
           when you finish. Download the full log as an Excel file anytime.
         </p>
       </div>
+
+      {teamError ? (
+        <div className="rounded-lg border border-red-900/60 bg-red-950/40 px-3 py-2 text-sm text-red-200">
+          {teamError}
+        </div>
+      ) : null}
+      {teamEmptyHint && !teamError ? (
+        <div className="rounded-lg border border-amber-900/50 bg-amber-950/30 px-3 py-2 text-sm text-amber-100">
+          No names yet. Set <strong className="font-mono">DATABASE_URL</strong> in Vercel (Supabase: Session pooler
+          from Connect → ORM → Prisma) and <strong>Redeploy</strong> so the build can run{" "}
+          <code className="text-xs">prisma db seed</code>.
+        </div>
+      ) : null}
 
       <div className="flex flex-col gap-4 rounded-lg border border-zinc-800 bg-zinc-900/50 p-4 sm:flex-row sm:items-end">
         <label className="flex min-w-[220px] flex-1 flex-col gap-1.5 text-sm">
