@@ -28,6 +28,8 @@ Open [http://localhost:3000](http://localhost:3000).
 | `npm run build` | `prisma migrate deploy` + `prisma db seed` + production Next.js build |
 | `npm run start` | Run production server |
 | `npm run db:seed` | Seed team members and sample tickets |
+| `npm run demo` | Local demo: embedded Postgres + migrate + seed + `next dev` |
+| `npm run vercel:host` | Print Vercel CLI checklist; full agent steps in `.cursor/skills/lattice-vercel-host/` |
 
 ## Requirements
 

@@ -10,7 +10,8 @@
     "postinstall": "prisma generate",
     "db:push": "prisma db push",
     "db:seed": "tsx prisma/seed.ts",
-    "demo": "node scripts/demo.mjs"
+    "demo": "node scripts/demo.mjs",
+    "vercel:host": "bash scripts/vercel-host.sh"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",
