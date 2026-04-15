@@ -10,32 +10,32 @@ echo "== Lattice / Vercel host helper =="
 echo "Repo: $ROOT"
 echo ""
 
-if ! command -v vercel >/dev/null 2>&1; then
-  echo "Vercel CLI not found. Install with:"
-  echo "  npm install -g vercel"
-  echo "Or use: npx vercel --version"
-  exit 1
+if command -v vercel >/dev/null 2>&1; then
+  VERCEL=(vercel)
+else
+  VERCEL=(npx --yes vercel)
+  echo "Using: npx vercel (install globally with: npm install -g vercel)"
 fi
 
-echo "Vercel CLI: $(vercel --version)"
+echo "Vercel CLI: $("${VERCEL[@]}" --version)"
 echo ""
 
-if ! vercel whoami >/dev/null 2>&1; then
-  echo "Not logged in. Run:"
-  echo "  vercel login"
-  echo "Then re-run this script."
+if ! "${VERCEL[@]}" whoami >/dev/null 2>&1; then
+  echo "Not logged in in this terminal. Run (opens browser once):"
+  echo "  ${VERCEL[*]} login"
+  echo "Then re-run: npm run vercel:host"
   exit 1
 fi
 
-echo "Logged in as: $(vercel whoami)"
+echo "Logged in as: $("${VERCEL[@]}" whoami)"
 echo ""
 echo "Next steps (run from this repo):"
-echo "  1. Link project (once):  vercel link"
+echo "  1. Link project (once):  ${VERCEL[*]} link"
 echo "  2. Add secrets (Production):"
-echo "       vercel env add DATABASE_URL production"
-echo "       vercel env add DIRECT_URL production"
+echo "       ${VERCEL[*]} env add DATABASE_URL production"
+echo "       ${VERCEL[*]} env add DIRECT_URL production"
 echo "     Use Supabase pooler URLs from Connect → ORM → Prisma, or Neon (same URL for both)."
-echo "  3. Deploy:                vercel --prod"
+echo "  3. Deploy:                ${VERCEL[*]} --prod"
 echo "     Or push to GitHub main if the project is imported in Vercel."
 echo ""
 echo "See README.md (Deploy to Vercel) and .cursor/skills/lattice-vercel-host/SKILL.md"
